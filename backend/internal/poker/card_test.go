@@ -62,7 +62,6 @@ func TestCardString(t *testing.T) {
 			card:     Card{Rank: Two, Suit: Hearts},
 			expected: "2♥",
 		},
-		// dodaj więcej przypadków testowych
 	}
 
 	for _, tt := range tests {
