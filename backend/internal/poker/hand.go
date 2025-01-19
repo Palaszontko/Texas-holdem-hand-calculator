@@ -408,7 +408,7 @@ func (hand *Hand) isFourOfAKind(communityCards []Card) *HandRank {
 
 			var kicker Card
 			sortCardsByRank(&allCards)
-			fmt.Println(allCards)
+
 			for _, c := range allCards {
 				if c.Rank != card {
 					kicker = c
@@ -442,10 +442,7 @@ func (hand *Hand) isStraightFlush(communityCards []Card) *HandRank {
 			handCopy := NewHand()
 
 			if result := handCopy.isStraight(flushCards); result != nil {
-				fmt.Println("Straight Flush")
 				sortCardsByRank(&allCards)
-				fmt.Printf("allCards: %v\n", allCards)
-				fmt.Printf("flushCards: %v\n", flushCards)
 
 				return &HandRank{
 					Type:     StraightFlush,
