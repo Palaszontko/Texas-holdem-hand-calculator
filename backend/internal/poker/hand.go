@@ -71,6 +71,11 @@ func (hand *Hand) Test(communityCards []Card) {
 		fmt.Printf("Best Hand: %s\n", result.BestHand)
 	}
 
+	if result := hand.isThreeOfAKind(communityCards); result != nil {
+		fmt.Println("Found Three of a Kind")
+		fmt.Printf("Best Hand: %s\n", result.BestHand)
+	}
+
 }
 
 func (hand *Hand) isPair(communityCards []Card) *HandRank {
@@ -151,6 +156,53 @@ func (hand *Hand) isTwoPair(communityCards []Card) *HandRank {
 
 		return &HandRank{
 			Type:     TwoPair,
+			BestHand: bestHand,
+		}
+	}
+
+	return nil
+}
+
+func (hand *Hand) isThreeOfAKind(communityCards []Card) *HandRank {
+	allCards := append(hand.Cards, communityCards...)
+	groupedCards := hand.groupCardsByRank(allCards)
+
+	var threeOfAKindCards []Card
+	var threeOfAKindRank Rank
+
+	for rank := Ace; rank >= Two; rank-- {
+		if groupedCards[rank] >= 3 {
+			threeOfAKindRank = rank
+
+			for _, c := range allCards {
+				if c.Rank == rank && len(threeOfAKindCards) < 3 {
+					threeOfAKindCards = append(threeOfAKindCards, c)
+				}
+			}
+			break
+		}
+	}
+
+	if len(threeOfAKindCards) == 3 {
+		var kickers []Card
+		for rank := Ace; rank >= Two; rank-- {
+			if rank != threeOfAKindRank {
+				for _, c := range allCards {
+					if c.Rank == rank {
+						kickers = append(kickers, c)
+						break
+					}
+				}
+				if len(kickers) == 2 {
+					break
+				}
+			}
+		}
+
+		bestHand := append(threeOfAKindCards, kickers...)
+
+		return &HandRank{
+			Type:     ThreeOfAKind,
 			BestHand: bestHand,
 		}
 	}
