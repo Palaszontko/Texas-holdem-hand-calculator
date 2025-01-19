@@ -25,10 +25,10 @@ func (deck *Deck) Shuffle() {
 	})
 }
 
-func (deck *Deck) Draw() Card {
-	card := deck.Cards[0]
-	deck.Cards = deck.Cards[1:]
-	return card
+func (deck *Deck) Draw(amount int) []Card {
+	cards := deck.Cards[:amount]
+	deck.Cards = deck.Cards[amount:]
+	return cards
 }
 
 func (deck *Deck) String() string {
