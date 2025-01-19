@@ -113,7 +113,7 @@ func (hand *Hand) isTwoPair(communityCards []Card) *HandRank {
 	var pairRanks []Rank
 
 	for rank := Ace; rank >= Two; rank-- {
-		if groupedCards[rank] >= 2 {
+		if groupedCards[rank] == 2 {
 			var pairCards []Card
 			for _, c := range allCards {
 				if c.Rank == rank && len(pairCards) < 2 {
