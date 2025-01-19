@@ -103,7 +103,7 @@ func (hand *Hand) EvaluateHandStrenght(communityCards []Card) *HandRank {
 		return result
 	}
 
-	highCards := hand.Cards
+	highCards := append(hand.Cards, communityCards...)
 	sortCardsByRank(&highCards)
 	highCards = highCards[:5]
 
