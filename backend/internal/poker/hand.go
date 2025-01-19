@@ -62,19 +62,25 @@ func (hand *Hand) Test(communityCards []Card) {
 		fmt.Printf("Best Hand: %s\n", result.BestHand)
 	}
 
+	if result := hand.isTwoPair(communityCards); result != nil {
+		fmt.Println("Found Two Pair")
+		fmt.Printf("Best Hand: %s\n", result.BestHand)
+	}
+
 }
 
 func (hand *Hand) isPair(communityCards []Card) *HandRank {
 	allCards := append(hand.Cards, communityCards...)
 	groupedCards := hand.groupCardsByRank(allCards)
 
-	for _, card := range allCards {
-		if groupedCards[card.Rank] == 2 {
-			pairCards := make([]Card, 0, 2)
-			kickers := make([]Card, 0, 3)
+	for card := Ace; card >= Two; card -= 1 {
+		if groupedCards[card] == 2 {
+
+			var pairCards []Card
+			var kickers []Card
 
 			for _, c := range allCards {
-				if c.Rank == card.Rank {
+				if c.Rank == card {
 					pairCards = append(pairCards, c)
 				} else {
 					kickers = append(kickers, c)
@@ -84,13 +90,53 @@ func (hand *Hand) isPair(communityCards []Card) *HandRank {
 			sort.Slice(kickers, func(i, j int) bool {
 				return kickers[i].Rank > kickers[j].Rank
 			})
-			kickers = kickers[:min(3, len(kickers))]
 
+			kickers = kickers[:min(3, len(kickers))]
 			return &HandRank{
 				Type:     Pair,
 				BestHand: append(pairCards, kickers...),
 			}
 		}
 	}
+
 	return nil
+}
+
+func (hand *Hand) isTwoPair(communityCards []Card) *HandRank {
+	allCards := append(hand.Cards, communityCards...)
+	groupedCards := hand.groupCardsByRank(allCards)
+
+	usedCards := map[Card]bool{}
+
+	var pairs [][]Card
+	var kickers []Card
+	for card := Ace; card >= Two; card -= 1 {
+		if groupedCards[card] == 2 {
+			var pairCards []Card
+			for _, c := range allCards {
+				if c.Rank == card {
+					pairCards = append(pairCards, c)
+					usedCards[c] = true
+				} else if !usedCards[c] {
+					kickers = append(kickers, c)
+				}
+				if len(pairCards) == 2 {
+					pairs = append(pairs, pairCards)
+					break
+				}
+			}
+		}
+	}
+
+	if len(pairs) == 2 {
+		sortCardsByRank(&kickers)
+		kickers = kickers[:min(1, len(kickers))]
+		return &HandRank{
+			Type:     TwoPair,
+			BestHand: append(append(pairs[0], pairs[1]...), kickers...),
+		}
+	}
+
+	return nil
+
 }
