@@ -110,9 +110,7 @@ func (hand *Hand) isPair(communityCards []Card) *HandRank {
 				}
 			}
 
-			sort.Slice(kickers, func(i, j int) bool {
-				return kickers[i].Rank > kickers[j].Rank
-			})
+			sortCardsByRank(&kickers)
 
 			kickers = kickers[:min(3, len(kickers))]
 			return &HandRank{
