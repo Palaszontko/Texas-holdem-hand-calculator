@@ -34,6 +34,7 @@ func (deck *Deck) Draw(amount int) []Card {
 func (deck Deck) String() string {
 	sb := strings.Builder{}
 
+	sb.WriteString("Deck: ")
 	for _, card := range deck.Cards {
 		sb.WriteString(card.String())
 		sb.WriteString(" ")
