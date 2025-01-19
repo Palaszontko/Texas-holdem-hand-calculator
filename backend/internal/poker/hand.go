@@ -59,6 +59,20 @@ func sortCardsByRank(cards *[]Card) {
 	})
 }
 
+func containsRanks(cards []Card, ranks []Rank) bool {
+	rankSet := make(map[Rank]bool)
+	for _, card := range cards {
+		rankSet[card.Rank] = true
+	}
+
+	for _, rank := range ranks {
+		if !rankSet[rank] {
+			return false
+		}
+	}
+	return true
+}
+
 func (hand *Hand) Test(communityCards []Card) {
 
 	if result := hand.isPair(communityCards); result != nil {
