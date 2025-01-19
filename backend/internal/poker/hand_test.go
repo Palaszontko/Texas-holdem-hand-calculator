@@ -574,3 +574,196 @@ func TestIsThreeOfAKind(t *testing.T) {
 		})
 	}
 }
+
+func TestIsStraight(t *testing.T) {
+	tests := []struct {
+		name           string
+		hand           Hand
+		communityCards []Card
+		want           *HandRank
+	}{
+		{
+			name: "Straight in hand higher than board",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: King, Suit: Spades},
+					{Rank: Queen, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Jack, Suit: Hearts},
+				{Rank: Ten, Suit: Diamonds},
+				{Rank: Nine, Suit: Clubs},
+			},
+			want: &HandRank{
+				Type: Straight,
+				BestHand: []Card{
+					{Rank: Nine, Suit: Clubs},
+					{Rank: Ten, Suit: Diamonds},
+					{Rank: Jack, Suit: Hearts},
+					{Rank: Queen, Suit: Hearts},
+					{Rank: King, Suit: Spades},
+				},
+			},
+		},
+		{
+			name: "Ace-high straight",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Ace, Suit: Spades},
+					{Rank: King, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Queen, Suit: Hearts},
+				{Rank: Jack, Suit: Diamonds},
+				{Rank: Ten, Suit: Clubs},
+			},
+			want: &HandRank{
+				Type: Straight,
+				BestHand: []Card{
+					{Rank: Ten, Suit: Clubs},
+					{Rank: Jack, Suit: Diamonds},
+					{Rank: Queen, Suit: Hearts},
+					{Rank: King, Suit: Hearts},
+					{Rank: Ace, Suit: Spades},
+				},
+			},
+		},
+		{
+			name: "Wheel straight (A-5)",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Ace, Suit: Spades},
+					{Rank: Two, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Three, Suit: Hearts},
+				{Rank: Four, Suit: Diamonds},
+				{Rank: Five, Suit: Clubs},
+			},
+			want: &HandRank{
+				Type: Straight,
+				BestHand: []Card{
+					{Rank: Ace, Suit: Spades},
+					{Rank: Two, Suit: Hearts},
+					{Rank: Three, Suit: Hearts},
+					{Rank: Four, Suit: Diamonds},
+					{Rank: Five, Suit: Clubs},
+				},
+			},
+		},
+		{
+			name: "No straight - missing card",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: King, Suit: Spades},
+					{Rank: Queen, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Jack, Suit: Hearts},
+				{Rank: Ten, Suit: Diamonds},
+				{Rank: Eight, Suit: Clubs}, // Missing Nine
+			},
+			want: nil,
+		},
+		{
+			name: "Multiple possible straights - should pick highest",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Nine, Suit: Spades},
+					{Rank: Eight, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Seven, Suit: Hearts},
+				{Rank: Six, Suit: Diamonds},
+				{Rank: Five, Suit: Clubs},
+				{Rank: Four, Suit: Spades},
+				{Rank: Three, Suit: Hearts},
+			},
+			want: &HandRank{
+				Type: Straight,
+				BestHand: []Card{
+					{Rank: Five, Suit: Clubs},
+					{Rank: Six, Suit: Diamonds},
+					{Rank: Seven, Suit: Hearts},
+					{Rank: Eight, Suit: Hearts},
+					{Rank: Nine, Suit: Spades},
+				},
+			},
+		},
+		{
+			name: "Edge case: Empty community cards",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Nine, Suit: Spades},
+					{Rank: Eight, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{},
+			want:           nil, // Can't make straight with just 2 cards
+		},
+		{
+			name: "Edge case: All same suit, different consecutive ranks",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: King, Suit: Spades},
+					{Rank: Queen, Suit: Spades},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Jack, Suit: Spades},
+				{Rank: Ten, Suit: Spades},
+				{Rank: Nine, Suit: Spades},
+			},
+			want: &HandRank{
+				Type: Straight,
+				BestHand: []Card{
+					{Rank: Nine, Suit: Spades},
+					{Rank: Ten, Suit: Spades},
+					{Rank: Jack, Suit: Spades},
+					{Rank: Queen, Suit: Spades},
+					{Rank: King, Suit: Spades},
+				},
+			},
+		},
+		{
+			name: "Edge case: Straight in community cards only",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Two, Suit: Spades},
+					{Rank: Three, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Nine, Suit: Hearts},
+				{Rank: Eight, Suit: Diamonds},
+				{Rank: Seven, Suit: Clubs},
+				{Rank: Six, Suit: Spades},
+				{Rank: Five, Suit: Hearts},
+			},
+			want: &HandRank{
+				Type: Straight,
+				BestHand: []Card{
+					{Rank: Five, Suit: Hearts},
+					{Rank: Six, Suit: Spades},
+					{Rank: Seven, Suit: Clubs},
+					{Rank: Eight, Suit: Diamonds},
+					{Rank: Nine, Suit: Hearts},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.hand.isStraight(tt.communityCards)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("isStraight() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
