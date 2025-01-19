@@ -74,28 +74,43 @@ func containsRanks(cards []Card, ranks []Rank) bool {
 	return true
 }
 
-func (hand *Hand) Test(communityCards []Card) {
-
-	if result := hand.isPair(communityCards); result != nil {
-		fmt.Println("Found Pair")
-		fmt.Printf("Best Hand: %s\n", result.BestHand)
+func (hand *Hand) EvaluateHandStrenght(communityCards []Card) *HandRank {
+	if result := hand.isRoyalFlush(communityCards); result != nil {
+		return result
 	}
-
-	if result := hand.isTwoPair(communityCards); result != nil {
-		fmt.Println("Found Two Pair")
-		fmt.Printf("Best Hand: %s\n", result.BestHand)
+	if result := hand.isStraightFlush(communityCards); result != nil {
+		return result
 	}
-
-	if result := hand.isThreeOfAKind(communityCards); result != nil {
-		fmt.Println("Found Three of a Kind")
-		fmt.Printf("Best Hand: %s\n", result.BestHand)
+	if result := hand.isFourOfAKind(communityCards); result != nil {
+		return result
 	}
-
+	if result := hand.isFullHouse(communityCards); result != nil {
+		return result
+	}
+	if result := hand.isFlush(communityCards); result != nil {
+		return result
+	}
 	if result := hand.isStraight(communityCards); result != nil {
-		fmt.Println("Found Straight")
-		fmt.Printf("Best Hand: %s\n", result.BestHand)
+		return result
+	}
+	if result := hand.isThreeOfAKind(communityCards); result != nil {
+		return result
+	}
+	if result := hand.isTwoPair(communityCards); result != nil {
+		return result
+	}
+	if result := hand.isPair(communityCards); result != nil {
+		return result
 	}
 
+	highCards := hand.Cards
+	sortCardsByRank(&highCards)
+	highCards = highCards[:5]
+
+	return &HandRank{
+		Type:     HighCard,
+		BestHand: highCards,
+	}
 }
 
 func (hand *Hand) isPair(communityCards []Card) *HandRank {
