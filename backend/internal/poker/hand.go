@@ -9,6 +9,10 @@ type Hand struct {
 	Cards []Card
 }
 
+func NewHand(cards ...Card) Hand {
+	return Hand{Cards: cards}
+}
+
 func (hand Hand) String() string {
 	return fmt.Sprintf("Hand: %s", hand.Cards)
 }
