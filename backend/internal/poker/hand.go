@@ -38,6 +38,26 @@ const (
 	RoyalFlush
 )
 
+func (h HandRankType) String() string {
+	handRankStrings := map[HandRankType]string{
+		HighCard:      "High Card",
+		Pair:          "Pair",
+		TwoPair:       "Two Pair",
+		ThreeOfAKind:  "Three of a Kind",
+		Straight:      "Straight",
+		Flush:         "Flush",
+		FullHouse:     "Full House",
+		FourOfAKind:   "Four of a Kind",
+		StraightFlush: "Straight Flush",
+		RoyalFlush:    "Royal Flush",
+	}
+
+	if str, exists := handRankStrings[h]; exists {
+		return str
+	}
+	return "Unknown Hand"
+}
+
 func (hand *Hand) groupCardsByRank(cards []Card) map[Rank]int {
 	groupedCards := make(map[Rank]int)
 	for _, card := range cards {
