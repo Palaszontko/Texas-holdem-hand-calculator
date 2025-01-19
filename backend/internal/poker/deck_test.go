@@ -56,14 +56,14 @@ func TestShuffle(t *testing.T) {
 
 func TestDraw(t *testing.T) {
 	deck := NewDeck()
-	card := deck.Draw()
+	card := deck.Draw(1)
 
 	if len(deck.Cards) != 51 {
 		t.Errorf("expected 51 cards after draw, got %d", len(deck.Cards))
 	}
 
 	for _, c := range deck.Cards {
-		if c == card {
+		if c == card[0] {
 			t.Error("drawn card still in deck")
 		}
 	}
