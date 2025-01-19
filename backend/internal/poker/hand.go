@@ -410,3 +410,62 @@ func (hand *Hand) isFourOfAKind(communityCards []Card) *HandRank {
 
 	return nil
 }
+
+func (hand *Hand) isStraightFlush(communityCards []Card) *HandRank {
+	allCards := append(hand.Cards, communityCards...)
+	groupedCards := hand.groupCardsBySuit(allCards)
+
+	for suit, amount := range groupedCards {
+		if amount >= 5 {
+			var flushCards []Card
+			for _, card := range allCards {
+				if card.Suit == suit {
+					flushCards = append(flushCards, card)
+				}
+			}
+
+			handCopy := NewHand()
+
+			if result := handCopy.isStraight(flushCards); result != nil {
+				fmt.Println("Straight Flush")
+				sortCardsByRank(&allCards)
+				fmt.Printf("allCards: %v\n", allCards)
+				fmt.Printf("flushCards: %v\n", flushCards)
+
+				return &HandRank{
+					Type:     StraightFlush,
+					BestHand: result.BestHand,
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
+func (hand *Hand) isRoyalFlush(communityCards []Card) *HandRank {
+	allCards := append(hand.Cards, communityCards...)
+	groupedCards := hand.groupCardsBySuit(allCards)
+
+	for suit, amount := range groupedCards {
+		if amount >= 5 {
+			var flushCards []Card
+			for _, card := range allCards {
+				if card.Suit == suit {
+					flushCards = append(flushCards, card)
+				}
+			}
+
+			if containsRanks(flushCards, []Rank{Ace, King, Queen, Jack, Ten}) {
+				sortCardsByRank(&flushCards)
+
+				return &HandRank{
+					Type:     RoyalFlush,
+					BestHand: flushCards[:5],
+				}
+			}
+		}
+	}
+
+	return nil
+}
