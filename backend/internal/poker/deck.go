@@ -31,7 +31,7 @@ func (deck *Deck) Draw(amount int) []Card {
 	return cards
 }
 
-func (deck *Deck) String() string {
+func (deck Deck) String() string {
 	sb := strings.Builder{}
 
 	for _, card := range deck.Cards {
