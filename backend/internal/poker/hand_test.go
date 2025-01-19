@@ -767,3 +767,533 @@ func TestIsStraight(t *testing.T) {
 		})
 	}
 }
+
+func TestIsFlush(t *testing.T) {
+	tests := []struct {
+		name           string
+		hand           Hand
+		communityCards []Card
+		want           *HandRank
+	}{
+		{
+			name: "Basic flush in hearts",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Ace, Suit: Hearts},
+					{Rank: King, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Ten, Suit: Hearts},
+				{Rank: Eight, Suit: Hearts},
+				{Rank: Six, Suit: Hearts},
+				{Rank: Two, Suit: Diamonds},
+				{Rank: Three, Suit: Clubs},
+			},
+			want: &HandRank{
+				Type: Flush,
+				BestHand: []Card{
+					{Rank: Ace, Suit: Hearts},
+					{Rank: King, Suit: Hearts},
+					{Rank: Ten, Suit: Hearts},
+					{Rank: Eight, Suit: Hearts},
+					{Rank: Six, Suit: Hearts},
+				},
+			},
+		},
+		{
+			name: "Seven card flush - should pick highest five",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Ace, Suit: Spades},
+					{Rank: King, Suit: Spades},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Queen, Suit: Spades},
+				{Rank: Jack, Suit: Spades},
+				{Rank: Ten, Suit: Spades},
+				{Rank: Nine, Suit: Spades},
+				{Rank: Eight, Suit: Spades},
+			},
+			want: &HandRank{
+				Type: Flush,
+				BestHand: []Card{
+					{Rank: Ace, Suit: Spades},
+					{Rank: King, Suit: Spades},
+					{Rank: Queen, Suit: Spades},
+					{Rank: Jack, Suit: Spades},
+					{Rank: Ten, Suit: Spades},
+				},
+			},
+		},
+		{
+			name: "No flush - mixed suits",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Ace, Suit: Hearts},
+					{Rank: King, Suit: Diamonds},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Queen, Suit: Hearts},
+				{Rank: Jack, Suit: Spades},
+				{Rank: Ten, Suit: Clubs},
+				{Rank: Nine, Suit: Hearts},
+				{Rank: Eight, Suit: Hearts},
+			},
+			want: nil,
+		},
+		{
+			name: "Almost flush - four cards",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Ace, Suit: Clubs},
+					{Rank: King, Suit: Clubs},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Queen, Suit: Clubs},
+				{Rank: Jack, Suit: Clubs},
+				{Rank: Ten, Suit: Hearts},
+				{Rank: Nine, Suit: Diamonds},
+				{Rank: Eight, Suit: Spades},
+			},
+			want: nil,
+		},
+		{
+			name: "Edge case: Lowest possible flush",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Two, Suit: Diamonds},
+					{Rank: Three, Suit: Diamonds},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Four, Suit: Diamonds},
+				{Rank: Five, Suit: Diamonds},
+				{Rank: Six, Suit: Diamonds},
+				{Rank: Ace, Suit: Hearts},
+				{Rank: King, Suit: Spades},
+			},
+			want: &HandRank{
+				Type: Flush,
+				BestHand: []Card{
+					{Rank: Six, Suit: Diamonds},
+					{Rank: Five, Suit: Diamonds},
+					{Rank: Four, Suit: Diamonds},
+					{Rank: Three, Suit: Diamonds},
+					{Rank: Two, Suit: Diamonds},
+				},
+			},
+		},
+		{
+			name: "Edge case: Empty community cards",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Ace, Suit: Spades},
+					{Rank: King, Suit: Spades},
+				},
+			},
+			communityCards: []Card{},
+			want:           nil,
+		},
+		{
+			name: "Edge case: Flush in community cards only",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Ace, Suit: Hearts},
+					{Rank: King, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Ten, Suit: Diamonds},
+				{Rank: Eight, Suit: Diamonds},
+				{Rank: Six, Suit: Diamonds},
+				{Rank: Four, Suit: Diamonds},
+				{Rank: Two, Suit: Diamonds},
+			},
+			want: &HandRank{
+				Type: Flush,
+				BestHand: []Card{
+					{Rank: Ten, Suit: Diamonds},
+					{Rank: Eight, Suit: Diamonds},
+					{Rank: Six, Suit: Diamonds},
+					{Rank: Four, Suit: Diamonds},
+					{Rank: Two, Suit: Diamonds},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.hand.isFlush(tt.communityCards)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("isFlush() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestIsFullHouse(t *testing.T) {
+	tests := []struct {
+		name           string
+		hand           Hand
+		communityCards []Card
+		want           *HandRank
+	}{
+		{
+			name: "Basic full house: Three in hand, pair in community",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: King, Suit: Spades},
+					{Rank: King, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: King, Suit: Diamonds},
+				{Rank: Ace, Suit: Hearts},
+				{Rank: Ace, Suit: Diamonds},
+			},
+			want: &HandRank{
+				Type: FullHouse,
+				BestHand: []Card{
+					{Rank: King, Suit: Spades},
+					{Rank: King, Suit: Hearts},
+					{Rank: King, Suit: Diamonds},
+					{Rank: Ace, Suit: Hearts},
+					{Rank: Ace, Suit: Diamonds},
+				},
+			},
+		},
+		{
+			name: "Edge case: Two possible full houses, should pick higher three of a kind",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Ace, Suit: Spades},
+					{Rank: Ace, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Ace, Suit: Diamonds},
+				{Rank: King, Suit: Hearts},
+				{Rank: King, Suit: Diamonds},
+				{Rank: King, Suit: Clubs},
+				{Rank: Two, Suit: Clubs},
+			},
+			want: &HandRank{
+				Type: FullHouse,
+				BestHand: []Card{
+					{Rank: Ace, Suit: Spades},
+					{Rank: Ace, Suit: Hearts},
+					{Rank: Ace, Suit: Diamonds},
+					{Rank: King, Suit: Hearts},
+					{Rank: King, Suit: Diamonds},
+				},
+			},
+		},
+		{
+			name: "Edge case: Two three of a kinds, should pick highest combination",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: King, Suit: Spades},
+					{Rank: King, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: King, Suit: Diamonds},
+				{Rank: Queen, Suit: Hearts},
+				{Rank: Queen, Suit: Diamonds},
+				{Rank: Queen, Suit: Clubs},
+			},
+			want: &HandRank{
+				Type: FullHouse,
+				BestHand: []Card{
+					{Rank: King, Suit: Spades},
+					{Rank: King, Suit: Hearts},
+					{Rank: King, Suit: Diamonds},
+					{Rank: Queen, Suit: Hearts},
+					{Rank: Queen, Suit: Diamonds},
+				},
+			},
+		},
+		{
+			name: "Edge case: Multiple pairs with three of a kind",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Ace, Suit: Spades},
+					{Rank: Ace, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Ace, Suit: Diamonds},
+				{Rank: King, Suit: Hearts},
+				{Rank: King, Suit: Diamonds},
+				{Rank: Queen, Suit: Hearts},
+				{Rank: Queen, Suit: Diamonds},
+			},
+			want: &HandRank{
+				Type: FullHouse,
+				BestHand: []Card{
+					{Rank: Ace, Suit: Spades},
+					{Rank: Ace, Suit: Hearts},
+					{Rank: Ace, Suit: Diamonds},
+					{Rank: King, Suit: Hearts},
+					{Rank: King, Suit: Diamonds},
+				},
+			},
+		},
+		{
+			name: "Not a full house: Only three of a kind",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: King, Suit: Spades},
+					{Rank: King, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: King, Suit: Diamonds},
+				{Rank: Ace, Suit: Hearts},
+				{Rank: Queen, Suit: Diamonds},
+			},
+			want: nil,
+		},
+		{
+			name: "Not a full house: Only two pairs",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: King, Suit: Spades},
+					{Rank: King, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Ace, Suit: Diamonds},
+				{Rank: Ace, Suit: Hearts},
+				{Rank: Queen, Suit: Diamonds},
+			},
+			want: nil,
+		},
+		{
+			name: "Edge case: Empty community cards with pair in hand",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: King, Suit: Spades},
+					{Rank: King, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{},
+			want:           nil,
+		},
+		{
+			name: "Edge case: Full house possible only with community cards",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Two, Suit: Spades},
+					{Rank: Three, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Ace, Suit: Diamonds},
+				{Rank: Ace, Suit: Hearts},
+				{Rank: Ace, Suit: Clubs},
+				{Rank: King, Suit: Hearts},
+				{Rank: King, Suit: Diamonds},
+			},
+			want: &HandRank{
+				Type: FullHouse,
+				BestHand: []Card{
+					{Rank: Ace, Suit: Diamonds},
+					{Rank: Ace, Suit: Hearts},
+					{Rank: Ace, Suit: Clubs},
+					{Rank: King, Suit: Hearts},
+					{Rank: King, Suit: Diamonds},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.hand.isFullHouse(tt.communityCards)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("isFullHouse() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestIsStraightFlush(t *testing.T) {
+	tests := []struct {
+		name           string
+		hand           Hand
+		communityCards []Card
+		want           *HandRank
+	}{
+		{
+			name: "Basic straight flush: Five consecutive cards of the same suit",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Ten, Suit: Hearts},
+					{Rank: Jack, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Queen, Suit: Hearts},
+				{Rank: King, Suit: Hearts},
+				{Rank: Ace, Suit: Hearts},
+			},
+			want: &HandRank{
+				Type: StraightFlush,
+				BestHand: []Card{
+					{Rank: Ten, Suit: Hearts},
+					{Rank: Jack, Suit: Hearts},
+					{Rank: Queen, Suit: Hearts},
+					{Rank: King, Suit: Hearts},
+					{Rank: Ace, Suit: Hearts},
+				},
+			},
+		},
+		{
+			name: "Edge case: Ace-low straight flush",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Ace, Suit: Spades},
+					{Rank: Two, Suit: Spades},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Three, Suit: Spades},
+				{Rank: Four, Suit: Spades},
+				{Rank: Five, Suit: Spades},
+			},
+			want: &HandRank{
+				Type: StraightFlush,
+				BestHand: []Card{
+					{Rank: Ace, Suit: Spades},
+					{Rank: Two, Suit: Spades},
+					{Rank: Three, Suit: Spades},
+					{Rank: Four, Suit: Spades},
+					{Rank: Five, Suit: Spades},
+				},
+			},
+		},
+		{
+			name: "Edge case: Multiple possible straight flushes, should pick highest",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Nine, Suit: Diamonds},
+					{Rank: Ten, Suit: Diamonds},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Jack, Suit: Diamonds},
+				{Rank: Queen, Suit: Diamonds},
+				{Rank: King, Suit: Diamonds},
+				{Rank: Eight, Suit: Diamonds},
+				{Rank: Seven, Suit: Diamonds},
+			},
+			want: &HandRank{
+				Type: StraightFlush,
+				BestHand: []Card{
+					{Rank: Nine, Suit: Diamonds},
+					{Rank: Ten, Suit: Diamonds},
+					{Rank: Jack, Suit: Diamonds},
+					{Rank: Queen, Suit: Diamonds},
+					{Rank: King, Suit: Diamonds},
+				},
+			},
+		},
+		{
+			name: "Not a straight flush: Flush but not straight",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Two, Suit: Clubs},
+					{Rank: Four, Suit: Clubs},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Six, Suit: Clubs},
+				{Rank: Eight, Suit: Clubs},
+				{Rank: Ten, Suit: Clubs},
+			},
+			want: nil,
+		},
+		{
+			name: "Not a straight flush: Straight but not flush",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Six, Suit: Hearts},
+					{Rank: Seven, Suit: Diamonds},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Eight, Suit: Spades},
+				{Rank: Nine, Suit: Clubs},
+				{Rank: Ten, Suit: Hearts},
+			},
+			want: nil,
+		},
+		{
+			name: "Edge case: Empty community cards",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Ace, Suit: Hearts},
+					{Rank: King, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{},
+			want:           nil,
+		},
+		{
+			name: "Edge case: Straight flush possible only with community cards",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Two, Suit: Diamonds},
+					{Rank: Three, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Six, Suit: Clubs},
+				{Rank: Seven, Suit: Clubs},
+				{Rank: Eight, Suit: Clubs},
+				{Rank: Nine, Suit: Clubs},
+				{Rank: Ten, Suit: Clubs},
+			},
+			want: &HandRank{
+				Type: StraightFlush,
+				BestHand: []Card{
+					{Rank: Six, Suit: Clubs},
+					{Rank: Seven, Suit: Clubs},
+					{Rank: Eight, Suit: Clubs},
+					{Rank: Nine, Suit: Clubs},
+					{Rank: Ten, Suit: Clubs},
+				},
+			},
+		},
+		{
+			name: "Not a straight flush: Almost flush with gap",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Two, Suit: Hearts},
+					{Rank: Three, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Four, Suit: Hearts},
+				{Rank: Six, Suit: Hearts},
+				{Rank: Seven, Suit: Hearts},
+			},
+			want: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.hand.isStraightFlush(tt.communityCards)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("isStraightFlush() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
