@@ -105,38 +105,51 @@ func (hand *Hand) isPair(communityCards []Card) *HandRank {
 func (hand *Hand) isTwoPair(communityCards []Card) *HandRank {
 	allCards := append(hand.Cards, communityCards...)
 	groupedCards := hand.groupCardsByRank(allCards)
-
-	usedCards := map[Card]bool{}
-
 	var pairs [][]Card
-	var kickers []Card
-	for card := Ace; card >= Two; card -= 1 {
-		if groupedCards[card] == 2 {
+	var pairRanks []Rank
+
+	for rank := Ace; rank >= Two; rank-- {
+		if groupedCards[rank] >= 2 {
 			var pairCards []Card
 			for _, c := range allCards {
-				if c.Rank == card {
+				if c.Rank == rank && len(pairCards) < 2 {
 					pairCards = append(pairCards, c)
-					usedCards[c] = true
-				} else if !usedCards[c] {
-					kickers = append(kickers, c)
-				}
-				if len(pairCards) == 2 {
-					pairs = append(pairs, pairCards)
-					break
 				}
 			}
+			pairs = append(pairs, pairCards)
+			pairRanks = append(pairRanks, rank)
 		}
 	}
 
-	if len(pairs) == 2 {
-		sortCardsByRank(&kickers)
-		kickers = kickers[:min(1, len(kickers))]
+	if len(pairs) >= 2 {
+		bestPairs := pairs[:2]
+
+		var kicker Card
+		if len(pairs) > 2 {
+			kicker = pairs[2][0]
+		} else {
+			usedRanks := map[Rank]bool{
+				pairRanks[0]: true,
+				pairRanks[1]: true,
+			}
+
+			for _, c := range allCards {
+				if !usedRanks[c.Rank] && (kicker.Rank == 0 || c.Rank > kicker.Rank) {
+					kicker = c
+				}
+			}
+		}
+
+		bestHand := append(bestPairs[0], bestPairs[1]...)
+		if kicker.Rank != 0 {
+			bestHand = append(bestHand, kicker)
+		}
+
 		return &HandRank{
 			Type:     TwoPair,
-			BestHand: append(append(pairs[0], pairs[1]...), kickers...),
+			BestHand: bestHand,
 		}
 	}
 
 	return nil
-
 }
