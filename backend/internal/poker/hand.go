@@ -134,7 +134,9 @@ func (hand *Hand) EvaluateHandStrenght(communityCards []Card) *HandRank {
 }
 
 func (hand *Hand) isPair(communityCards []Card) *HandRank {
-	allCards := append(hand.Cards, communityCards...)
+	allCards := make([]Card, len(hand.Cards)+len(communityCards))
+	copy(allCards, hand.Cards)
+	copy(allCards[len(hand.Cards):], communityCards)
 	groupedCards := hand.groupCardsByRank(allCards)
 
 	for card := Ace; card >= Two; card -= 1 {
@@ -165,7 +167,9 @@ func (hand *Hand) isPair(communityCards []Card) *HandRank {
 }
 
 func (hand *Hand) isTwoPair(communityCards []Card) *HandRank {
-	allCards := append(hand.Cards, communityCards...)
+	allCards := make([]Card, len(hand.Cards)+len(communityCards))
+	copy(allCards, hand.Cards)
+	copy(allCards[len(hand.Cards):], communityCards)
 	groupedCards := hand.groupCardsByRank(allCards)
 	var pairs [][]Card
 	var pairRanks []Rank
@@ -217,7 +221,9 @@ func (hand *Hand) isTwoPair(communityCards []Card) *HandRank {
 }
 
 func (hand *Hand) isThreeOfAKind(communityCards []Card) *HandRank {
-	allCards := append(hand.Cards, communityCards...)
+	allCards := make([]Card, len(hand.Cards)+len(communityCards))
+	copy(allCards, hand.Cards)
+	copy(allCards[len(hand.Cards):], communityCards)
 	groupedCards := hand.groupCardsByRank(allCards)
 
 	var threeOfAKindCards []Card
@@ -264,7 +270,9 @@ func (hand *Hand) isThreeOfAKind(communityCards []Card) *HandRank {
 }
 
 func (hand *Hand) isStraight(communityCards []Card) *HandRank {
-	allCards := append(hand.Cards, communityCards...)
+	allCards := make([]Card, len(hand.Cards)+len(communityCards))
+	copy(allCards, hand.Cards)
+	copy(allCards[len(hand.Cards):], communityCards)
 
 	rankPresent := make(map[Rank]bool)
 	for _, card := range allCards {
@@ -319,7 +327,9 @@ func (hand *Hand) isStraight(communityCards []Card) *HandRank {
 }
 
 func (hand *Hand) isFlush(communityCards []Card) *HandRank {
-	allCards := append(hand.Cards, communityCards...)
+	allCards := make([]Card, len(hand.Cards)+len(communityCards))
+	copy(allCards, hand.Cards)
+	copy(allCards[len(hand.Cards):], communityCards)
 	groupedCards := hand.groupCardsBySuit(allCards)
 
 	for suit, amount := range groupedCards {
@@ -344,7 +354,9 @@ func (hand *Hand) isFlush(communityCards []Card) *HandRank {
 }
 
 func (hand *Hand) isFullHouse(communityCards []Card) *HandRank {
-	allCards := append(hand.Cards, communityCards...)
+	allCards := make([]Card, len(hand.Cards)+len(communityCards))
+	copy(allCards, hand.Cards)
+	copy(allCards[len(hand.Cards):], communityCards)
 	groupedCards := hand.groupCardsByRank(allCards)
 
 	var threeOfAKindRanks []Rank
@@ -414,7 +426,9 @@ func (hand *Hand) isFullHouse(communityCards []Card) *HandRank {
 }
 
 func (hand *Hand) isFourOfAKind(communityCards []Card) *HandRank {
-	allCards := append(hand.Cards, communityCards...)
+	allCards := make([]Card, len(hand.Cards)+len(communityCards))
+	copy(allCards, hand.Cards)
+	copy(allCards[len(hand.Cards):], communityCards)
 	groupedCards := hand.groupCardsByRank(allCards)
 
 	for card, amount := range groupedCards {
@@ -447,7 +461,9 @@ func (hand *Hand) isFourOfAKind(communityCards []Card) *HandRank {
 }
 
 func (hand *Hand) isStraightFlush(communityCards []Card) *HandRank {
-	allCards := append(hand.Cards, communityCards...)
+	allCards := make([]Card, len(hand.Cards)+len(communityCards))
+	copy(allCards, hand.Cards)
+	copy(allCards[len(hand.Cards):], communityCards)
 	groupedCards := hand.groupCardsBySuit(allCards)
 
 	for suit, amount := range groupedCards {
@@ -476,7 +492,9 @@ func (hand *Hand) isStraightFlush(communityCards []Card) *HandRank {
 }
 
 func (hand *Hand) isRoyalFlush(communityCards []Card) *HandRank {
-	allCards := append(hand.Cards, communityCards...)
+	allCards := make([]Card, len(hand.Cards)+len(communityCards))
+	copy(allCards, hand.Cards)
+	copy(allCards[len(hand.Cards):], communityCards)
 	groupedCards := hand.groupCardsBySuit(allCards)
 
 	for suit, amount := range groupedCards {
