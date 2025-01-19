@@ -26,9 +26,12 @@ func (deck *Deck) Shuffle() {
 }
 
 func (deck *Deck) Draw(amount int) []Card {
-	cards := deck.Cards[:amount]
+	drawnCards := make([]Card, amount)
+	copy(drawnCards, deck.Cards[:amount])
+
 	deck.Cards = deck.Cards[amount:]
-	return cards
+
+	return drawnCards
 }
 
 func (deck Deck) String() string {
