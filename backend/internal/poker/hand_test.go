@@ -383,3 +383,194 @@ func TestIsTwoPair(t *testing.T) {
 		})
 	}
 }
+
+func TestIsThreeOfAKind(t *testing.T) {
+	tests := []struct {
+		name           string
+		hand           Hand
+		communityCards []Card
+		want           *HandRank
+	}{
+		{
+			name: "Three of a kind in hand",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Ace, Suit: Spades},
+					{Rank: Ace, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Ace, Suit: Diamonds},
+				{Rank: King, Suit: Hearts},
+				{Rank: Queen, Suit: Clubs},
+			},
+			want: &HandRank{
+				Type: ThreeOfAKind,
+				BestHand: []Card{
+					{Rank: Ace, Suit: Spades},
+					{Rank: Ace, Suit: Hearts},
+					{Rank: Ace, Suit: Diamonds},
+					{Rank: King, Suit: Hearts},
+					{Rank: Queen, Suit: Clubs},
+				},
+			},
+		},
+		{
+			name: "Three of a kind with two in community",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: King, Suit: Spades},
+					{Rank: King, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: King, Suit: Diamonds},
+				{Rank: Ace, Suit: Hearts},
+				{Rank: Queen, Suit: Clubs},
+			},
+			want: &HandRank{
+				Type: ThreeOfAKind,
+				BestHand: []Card{
+					{Rank: King, Suit: Spades},
+					{Rank: King, Suit: Hearts},
+					{Rank: King, Suit: Diamonds},
+					{Rank: Ace, Suit: Hearts},
+					{Rank: Queen, Suit: Clubs},
+				},
+			},
+		},
+		{
+			name: "Three of a kind all in community",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Ten, Suit: Spades},
+					{Rank: Nine, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: King, Suit: Hearts},
+				{Rank: King, Suit: Diamonds},
+				{Rank: King, Suit: Clubs},
+				{Rank: Two, Suit: Hearts},
+				{Rank: Three, Suit: Clubs},
+			},
+			want: &HandRank{
+				Type: ThreeOfAKind,
+				BestHand: []Card{
+					{Rank: King, Suit: Hearts},
+					{Rank: King, Suit: Diamonds},
+					{Rank: King, Suit: Clubs},
+					{Rank: Ten, Suit: Spades},
+					{Rank: Nine, Suit: Hearts},
+				},
+			},
+		},
+		{
+			name: "No three of a kind",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Ace, Suit: Spades},
+					{Rank: King, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: Queen, Suit: Hearts},
+				{Rank: Queen, Suit: Diamonds},
+				{Rank: Jack, Suit: Clubs},
+			},
+			want: nil,
+		},
+		{
+			name: "Edge case: Multiple high kickers available",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: King, Suit: Spades},
+					{Rank: King, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: King, Suit: Diamonds},
+				{Rank: Ace, Suit: Hearts},
+				{Rank: Queen, Suit: Diamonds},
+				{Rank: Jack, Suit: Clubs},
+				{Rank: Ten, Suit: Spades},
+			},
+			want: &HandRank{
+				Type: ThreeOfAKind,
+				BestHand: []Card{
+					{Rank: King, Suit: Spades},
+					{Rank: King, Suit: Hearts},
+					{Rank: King, Suit: Diamonds},
+					{Rank: Ace, Suit: Hearts},
+					{Rank: Queen, Suit: Diamonds},
+				},
+			},
+		},
+		{
+			name: "Edge case: Empty community cards with pair in hand",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: Ace, Suit: Spades},
+					{Rank: Ace, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{},
+			want:           nil,
+		},
+		{
+			name: "Edge case: Exactly one kicker available",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: King, Suit: Spades},
+					{Rank: King, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: King, Suit: Diamonds},
+				{Rank: Ace, Suit: Hearts},
+			},
+			want: &HandRank{
+				Type: ThreeOfAKind,
+				BestHand: []Card{
+					{Rank: King, Suit: Spades},
+					{Rank: King, Suit: Hearts},
+					{Rank: King, Suit: Diamonds},
+					{Rank: Ace, Suit: Hearts},
+				},
+			},
+		},
+		{
+			name: "Edge case: Four of a kind available",
+			hand: Hand{
+				Cards: []Card{
+					{Rank: King, Suit: Spades},
+					{Rank: King, Suit: Hearts},
+				},
+			},
+			communityCards: []Card{
+				{Rank: King, Suit: Diamonds},
+				{Rank: King, Suit: Clubs},
+				{Rank: Ace, Suit: Hearts},
+			},
+			want: &HandRank{
+				Type: ThreeOfAKind,
+				BestHand: []Card{
+					{Rank: King, Suit: Spades},
+					{Rank: King, Suit: Hearts},
+					{Rank: King, Suit: Diamonds},
+					{Rank: Ace, Suit: Hearts},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.hand.isThreeOfAKind(tt.communityCards)
+
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("isThreeOfAKind()\ngot  = %+v\nwant = %+v", got, tt.want)
+			}
+		})
+	}
+}
