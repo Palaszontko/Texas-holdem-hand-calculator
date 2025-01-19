@@ -2,6 +2,7 @@ package poker
 
 import (
 	"fmt"
+	"slices"
 	"sort"
 )
 
@@ -87,6 +88,11 @@ func (hand *Hand) Test(communityCards []Card) {
 
 	if result := hand.isThreeOfAKind(communityCards); result != nil {
 		fmt.Println("Found Three of a Kind")
+		fmt.Printf("Best Hand: %s\n", result.BestHand)
+	}
+
+	if result := hand.isStraight(communityCards); result != nil {
+		fmt.Println("Found Straight")
 		fmt.Printf("Best Hand: %s\n", result.BestHand)
 	}
 
@@ -216,6 +222,61 @@ func (hand *Hand) isThreeOfAKind(communityCards []Card) *HandRank {
 		return &HandRank{
 			Type:     ThreeOfAKind,
 			BestHand: bestHand,
+		}
+	}
+
+	return nil
+}
+
+func (hand *Hand) isStraight(communityCards []Card) *HandRank {
+	allCards := append(hand.Cards, communityCards...)
+
+	rankPresent := make(map[Rank]bool)
+	for _, card := range allCards {
+		rankPresent[card.Rank] = true
+	}
+
+	for highCard := Ace; highCard >= Six; highCard-- {
+		straight := true
+		var straightCards []Card
+
+		for i := 0; i < 5; i++ {
+			currentRank := highCard - Rank(i)
+			if !rankPresent[currentRank] {
+				straight = false
+				break
+			}
+			for _, card := range allCards {
+				if card.Rank == currentRank {
+					straightCards = append(straightCards, card)
+					break
+				}
+			}
+		}
+
+		if straight {
+			slices.Reverse(straightCards)
+			return &HandRank{
+				Type:     Straight,
+				BestHand: straightCards,
+			}
+		}
+	}
+
+	if rankPresent[Ace] && rankPresent[Two] && rankPresent[Three] &&
+		rankPresent[Four] && rankPresent[Five] {
+		var straightCards []Card
+		for _, rank := range []Rank{Ace, Two, Three, Four, Five} {
+			for _, card := range allCards {
+				if card.Rank == rank {
+					straightCards = append(straightCards, card)
+					break
+				}
+			}
+		}
+		return &HandRank{
+			Type:     Straight,
+			BestHand: straightCards,
 		}
 	}
 
