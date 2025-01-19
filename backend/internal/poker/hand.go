@@ -288,12 +288,12 @@ func (hand *Hand) isFlush(communityCards []Card) *HandRank {
 	groupedCards := hand.groupCardsBySuit(allCards)
 
 	for suit, amount := range groupedCards {
-		if amount == 5 {
+		if amount >= 5 {
 			sortCardsByRank(&allCards)
 
 			var bestHand []Card
 			for _, card := range allCards {
-				if card.Suit == suit {
+				if card.Suit == suit && len(bestHand) < 5 {
 					bestHand = append(bestHand, card)
 				}
 			}
