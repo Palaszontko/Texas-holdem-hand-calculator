@@ -282,3 +282,131 @@ func (hand *Hand) isStraight(communityCards []Card) *HandRank {
 
 	return nil
 }
+
+func (hand *Hand) isFlush(communityCards []Card) *HandRank {
+	allCards := append(hand.Cards, communityCards...)
+	groupedCards := hand.groupCardsBySuit(allCards)
+
+	for suit, amount := range groupedCards {
+		if amount == 5 {
+			sortCardsByRank(&allCards)
+
+			var bestHand []Card
+			for _, card := range allCards {
+				if card.Suit == suit {
+					bestHand = append(bestHand, card)
+				}
+			}
+
+			return &HandRank{
+				Type:     Flush,
+				BestHand: bestHand,
+			}
+		}
+	}
+
+	return nil
+}
+
+func (hand *Hand) isFullHouse(communityCards []Card) *HandRank {
+	allCards := append(hand.Cards, communityCards...)
+	groupedCards := hand.groupCardsByRank(allCards)
+
+	var threeOfAKindRanks []Rank
+	var pairRanks []Rank
+
+	for rank, amount := range groupedCards {
+		if amount >= 3 {
+			threeOfAKindRanks = append(threeOfAKindRanks, rank)
+		}
+		if amount == 2 {
+			pairRanks = append(pairRanks, rank)
+		}
+	}
+
+	if len(threeOfAKindRanks) >= 2 {
+		slices.SortFunc(threeOfAKindRanks, func(a, b Rank) int {
+			return int(b) - int(a)
+		})
+
+		var bestHand []Card
+		for _, card := range allCards {
+			if card.Rank == threeOfAKindRanks[0] {
+				bestHand = append(bestHand, card)
+			}
+		}
+		count := 0
+		for _, card := range allCards {
+			if card.Rank == threeOfAKindRanks[1] && count < 2 {
+				bestHand = append(bestHand, card)
+				count++
+			}
+		}
+
+		return &HandRank{
+			Type:     FullHouse,
+			BestHand: bestHand,
+		}
+	}
+
+	if len(threeOfAKindRanks) == 1 && len(pairRanks) >= 1 {
+		var bestHand []Card
+
+		for _, card := range allCards {
+			if card.Rank == threeOfAKindRanks[0] {
+				bestHand = append(bestHand, card)
+			}
+		}
+
+		slices.SortFunc(pairRanks, func(a, b Rank) int {
+			return int(b) - int(a)
+		})
+		count := 0
+		for _, card := range allCards {
+			if card.Rank == pairRanks[0] && count < 2 {
+				bestHand = append(bestHand, card)
+				count++
+			}
+		}
+
+		return &HandRank{
+			Type:     FullHouse,
+			BestHand: bestHand,
+		}
+	}
+
+	return nil
+}
+
+func (hand *Hand) isFourOfAKind(communityCards []Card) *HandRank {
+	allCards := append(hand.Cards, communityCards...)
+	groupedCards := hand.groupCardsByRank(allCards)
+
+	for card, amount := range groupedCards {
+		if amount == 4 {
+			var fourOfAKindCards []Card
+			for _, c := range allCards {
+				if c.Rank == card {
+					fourOfAKindCards = append(fourOfAKindCards, c)
+				}
+			}
+
+			var kicker Card
+			sortCardsByRank(&allCards)
+			fmt.Println(allCards)
+			for _, c := range allCards {
+				if c.Rank != card {
+					kicker = c
+					break
+				}
+			}
+
+			return &HandRank{
+				Type:     FourOfAKind,
+				BestHand: append(fourOfAKindCards, kicker),
+			}
+		}
+	}
+
+	return nil
+}
