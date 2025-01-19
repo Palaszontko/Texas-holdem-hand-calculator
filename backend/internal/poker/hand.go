@@ -55,7 +55,7 @@ func (hand *Hand) groupCardsBySuit(cards []Card) map[Suit]int {
 
 func sortCardsByRank(cards *[]Card) {
 	sort.Slice(*cards, func(i, j int) bool {
-		return (*cards)[i].Rank < (*cards)[j].Rank
+		return (*cards)[i].Rank > (*cards)[j].Rank
 	})
 }
 
