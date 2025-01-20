@@ -63,8 +63,19 @@ func TrySimulatorWithRanomCardsOnHand(iterations int, concurrent int) {
 	fmt.Printf("❌ Lose: %.2f%%\n", result.LoseProbability*100)
 	fmt.Printf("\n⚡ Completed in: %v\n", duration.Round(time.Millisecond))
 }
+```
+```
+	🎲 POKER SIMULATION RESULTS
+════════════════════════════════════════════
+🎴 Your Hand:       Hand: [Q♦ K♠]
+🃏 Community Cards: [5♦ 3♣ J♣ Q♠ 5♣]
 
-}
+📈 RESULTS (from 500000 simulations):
+🏆 Win:  81.43%
+🤝 Tie:  0.51%
+❌ Lose: 18.07%
+
+⚡ Completed in: 1.054s
 ```
 
 ## API Endpoints
