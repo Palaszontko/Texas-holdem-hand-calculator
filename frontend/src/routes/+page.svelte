@@ -15,8 +15,6 @@
     const heartCards = getCards('H');
     const spadeCards = getCards('S');
 
-    diamondCards.pop();
-
     const allCards = [diamondCards, clubCards, heartCards, spadeCards];
     
 </script>
