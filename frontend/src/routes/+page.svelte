@@ -1,76 +1,44 @@
 <script>
-    import CardBox from "$lib/components/CardBox.svelte";
-    import Card from '$lib/components/Card.svelte';
-    import EmptyCardSlot from '$lib/components/EmptyCardSlot.svelte';
+import AllCardBox from "$lib/components/AllCardBox.svelte";
+import Card from '$lib/components/Card.svelte';
+import EmptyCard from "$lib/components/EmptyCard.svelte";
 
-    const cards = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
-    const suits = ['S', 'H', 'D', 'C'];
+const cards = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
+const suits = ['S', 'H', 'D', 'C'];
 
-    const getCards = (suit) => {
-        const result = cards.map((card) => `/cards/${card}${suit}.svg`);
-        return result;
-    };
+const getCards = (suit) => {
+    return cards.map((card) => ({
+        src: `/cards/${card}${suit}.svg`,
+        alt: `${card} of ${suit}`
+    }));
+};
 
-    const diamondCards = getCards('D');
-    const clubCards = getCards('C');
-    const heartCards = getCards('H');
-    const spadeCards = getCards('S');
-
-    const allCards = [diamondCards, clubCards, heartCards, spadeCards];
-    
+const diamondCards = getCards('D');
+const clubCards = getCards('C');
+const heartCards = getCards('H');
+const spadeCards = getCards('S');
+const allCards = [diamondCards, clubCards, heartCards, spadeCards];
 </script>
 
-
-
-<div class="min-h-screen bg-[#3f3f3f] flex flex-col items-center p-4">
-    <div class="cardsHolder flex flex-row justify-center m-12">
-        <div class="playerCards">
-            <h1 class="text-white text-2xl">Player Cards</h1>
-            <div class="flex flex-wrap gap-2 justify-center mt-4">
-                
-                <CardBox>
-                    {#each Array(2) as _}
-                    <EmptyCardSlot></EmptyCardSlot>
-                    {/each}
-                </CardBox>
-            </div>
-        </div>
-
-        <div class="opponentCards">
-            <h1 class="text-white text-2xl">Opponent cards</h1>
-            <div class="flex flex-wrap gap-2 justify-center mt-4">
-                <CardBox>
-                    {#each Array(2) as _}
-                    <EmptyCardSlot></EmptyCardSlot>
-                    {/each}
-                </CardBox>
-            </div>
-        </div>
-
-        <div class="boardCards">
-            <h1 class="text-white text-2xl">Board</h1>
-            <div class="flex flex-wrap gap-2 justify-center mt-4">
-                <CardBox>
-                    {#each Array(5) as _}
-                    <EmptyCardSlot></EmptyCardSlot>
-                    {/each}
-                </CardBox>
-            </div>
-        </div>
-
-
-
+<div class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col items-center p-4">
+    <div class="w-full max-w-7xl mx-auto text-center mb-4">
+        <h1 class="text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text mb-4">Texas Holdem Odds Calculator</h1>
+        <div class="h-1 w-64 bg-purple-500 mx-auto rounded-full"></div>
     </div>
 
-
-
-    <div class="m-20 cards-container max-w-[1400px]">
+    <div class="w-full max-w-7xl mx-auto p-6">
+        <div class="p-8 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 shadow-2xl">
+        
+        </div>
+    </div>
+    
+    <div class="space-y-2">
         {#each allCards as cardSetColor}
-        <CardBox>
-            {#each cardSetColor as card}
-            <Card src={card} playingCards={false}></Card>
-            {/each}
-        </CardBox>
+            <AllCardBox>
+                {#each cardSetColor as card}
+                    <Card src={card.src} alt={card.alt} />
+                {/each}
+            </AllCardBox>
         {/each}
     </div>
 </div>
