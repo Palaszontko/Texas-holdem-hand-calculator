@@ -6,6 +6,7 @@ import (
 
 type Config struct {
 	PlayerHand     poker.Hand
+	OpponentHand   poker.Hand
 	CommunityCards []poker.Card
 	NumIterations  int
 	NumConcurrent  int
