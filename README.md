@@ -30,11 +30,13 @@ func TrySimulatorWithRanomCardsOnHand(iterations int, concurrent int) {
 	deck.Shuffle()
 
 	playerHand := poker.NewHand(deck.Draw(2)...)
+	opponentHand := poker.NewHand(deck.Draw(2)...)
 
 	communityCards := deck.Draw(5)
 
 	config := Config{
 		PlayerHand:     playerHand,
+		OpponentHand:   opponentHand,
 		CommunityCards: communityCards,
 		NumIterations:  iterations,
 		NumConcurrent:  concurrent,
@@ -56,6 +58,7 @@ func TrySimulatorWithRanomCardsOnHand(iterations int, concurrent int) {
 	fmt.Println("\n🎲 POKER SIMULATION RESULTS")
 	fmt.Println("════════════════════════════════════════════")
 	fmt.Printf("🎴 Your Hand:       %v\n", playerHand)
+	fmt.Printf("🎴 Opponent's Hand: %v\n", opponentHand)
 	fmt.Printf("🃏 Community Cards: %v\n\n", communityCards)
 	fmt.Printf("📈 RESULTS (from %d simulations):\n", result.Iterations)
 	fmt.Printf("🏆 Win:  %.2f%%\n", result.WinProbability*100)
@@ -64,18 +67,20 @@ func TrySimulatorWithRanomCardsOnHand(iterations int, concurrent int) {
 	fmt.Printf("\n⚡ Completed in: %v\n", duration.Round(time.Millisecond))
 }
 ```
+
 ```
 	🎲 POKER SIMULATION RESULTS
 ════════════════════════════════════════════
-🎴 Your Hand:       Hand: [Q♦ K♠]
-🃏 Community Cards: [5♦ 3♣ J♣ Q♠ 5♣]
+🎴 Your Hand:       Hand: [Q♠ 2♥]
+🎴 Opponent's Hand: Hand: [8♦ 3♥]
+🃏 Community Cards: [8♠ A♣ Q♥]
 
 📈 RESULTS (from 500000 simulations):
-🏆 Win:  81.43%
-🤝 Tie:  0.51%
-❌ Lose: 18.07%
+🏆 Win:  81.67%
+🤝 Tie:  0.00%
+❌ Lose: 18.33%
 
-⚡ Completed in: 1.054s
+⚡ Completed in: 1.133s
 ```
 
 ## API Endpoints
@@ -91,6 +96,10 @@ Executes the Monte Carlo simulation for given cards.
   "playerCards": [
     { "Rank": 14, "Suit": 0 },
     { "Rank": 13, "Suit": 0 }
+  ],
+  "opponentCards": [
+    { "Rank": 12, "Suit": 1 },
+    { "Rank": 11, "Suit": 2 }
   ],
   "communityCards": [{ "Rank": 10, "Suit": 0 }],
   "numIterations": 100000,
