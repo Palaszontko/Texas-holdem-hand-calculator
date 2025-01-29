@@ -11,6 +11,7 @@ import (
 
 type SimulationRequest struct {
 	PlayerCards    []poker.Card `json:"playerCards"`
+	OpponentCards  []poker.Card `json:"opponentCards,omitempty"`
 	CommunityCards []poker.Card `json:"communityCards,omitempty"`
 	NumIterations  int          `json:"numIterations"`
 	NumConcurrent  int          `json:"numConcurrent"`
@@ -66,11 +67,12 @@ func SimulationHander(w http.ResponseWriter, r *http.Request) {
 		req.NumConcurrent = 16
 	}
 
-	fmt.Printf("Request - Player cards: %v, Community cards: %v, Iterations: %d\n",
-		req.PlayerCards, req.CommunityCards, req.NumIterations)
+	fmt.Printf("Request - Player cards: %v, Opponent cards: %v Community cards: %v, Iterations: %d\n",
+		req.PlayerCards, req.OpponentCards, req.CommunityCards, req.NumIterations)
 
 	config := simulator.Config{
 		PlayerHand:     poker.NewHand(req.PlayerCards...),
+		OpponentHand:   poker.NewHand(req.OpponentCards...),
 		CommunityCards: req.CommunityCards,
 		NumIterations:  req.NumIterations,
 		NumConcurrent:  req.NumConcurrent,
