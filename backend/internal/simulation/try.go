@@ -14,7 +14,7 @@ func TrySimulatorWithRanomCardsOnHand(iterations int, concurrent int) {
 	playerHand := poker.NewHand(deck.Draw(2)...)
 	opponentHand := poker.NewHand(deck.Draw(2)...)
 
-	communityCards := deck.Draw(5)
+	communityCards := deck.Draw(3)
 
 	config := Config{
 		PlayerHand:     playerHand,
