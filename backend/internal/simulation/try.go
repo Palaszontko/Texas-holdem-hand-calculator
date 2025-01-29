@@ -12,11 +12,13 @@ func TrySimulatorWithRanomCardsOnHand(iterations int, concurrent int) {
 	deck.Shuffle()
 
 	playerHand := poker.NewHand(deck.Draw(2)...)
+	opponentHand := poker.NewHand(deck.Draw(2)...)
 
 	communityCards := deck.Draw(5)
 
 	config := Config{
 		PlayerHand:     playerHand,
+		OpponentHand:   opponentHand,
 		CommunityCards: communityCards,
 		NumIterations:  iterations,
 		NumConcurrent:  concurrent,
@@ -38,6 +40,7 @@ func TrySimulatorWithRanomCardsOnHand(iterations int, concurrent int) {
 	fmt.Println("\n🎲 POKER SIMULATION RESULTS")
 	fmt.Println("════════════════════════════════════════════")
 	fmt.Printf("🎴 Your Hand:       %v\n", playerHand)
+	fmt.Printf("🎴 Opponent's Hand: %v\n", opponentHand)
 	fmt.Printf("🃏 Community Cards: %v\n\n", communityCards)
 	fmt.Printf("📈 RESULTS (from %d simulations):\n", result.Iterations)
 	fmt.Printf("🏆 Win:  %.2f%%\n", result.WinProbability*100)
