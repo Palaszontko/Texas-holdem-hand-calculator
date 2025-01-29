@@ -69,10 +69,11 @@ func (s *Simulator) runSingleSimulation() poker.Result {
 	deck = s.removeKnownCards(deck)
 	deck.Shuffle()
 
-	opponentHand := poker.NewHand(deck.Draw(2)...)
 	remainingCommunityCards := 5 - len(s.config.CommunityCards)
+	remainingOpponentCards := 2 - len(s.config.OpponentHand.Cards)
 
 	communityCards := append(s.config.CommunityCards, deck.Draw(remainingCommunityCards)...)
+	opponentHand := poker.Hand{Cards: append(s.config.OpponentHand.Cards, deck.Draw(remainingOpponentCards)...)}
 
 	result, _, _ := poker.CompareHands(s.config.PlayerHand, opponentHand, communityCards)
 
@@ -83,6 +84,10 @@ func (s *Simulator) removeKnownCards(deck poker.Deck) poker.Deck {
 	knownCards := make(map[poker.Card]bool)
 
 	for _, card := range s.config.PlayerHand.Cards {
+		knownCards[card] = true
+	}
+
+	for _, card := range s.config.OpponentHand.Cards {
 		knownCards[card] = true
 	}
 
