@@ -43,12 +43,14 @@ export const calculateProbabilities = async (playerCards, opponentCards, communi
     playerCards: validPlayerCards.map(convertCardToApiFormat),
     opponentCards: opponentCards.filter(Boolean).map(convertCardToApiFormat),
     communityCards: communityCards.filter(Boolean).map(convertCardToApiFormat),
-    numIterations: 100000,
+    numIterations: 5000,
     numConcurrent: 8,
   };
 
+  const apiURL = 'https://texas-holdem-hand-calculator-api.onrender.com/api/simulation';
+
   try {
-    const response = await fetch('http://localhost:8080/api/simulation', {
+    const response = await fetch(apiURL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
