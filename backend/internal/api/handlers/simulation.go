@@ -25,7 +25,18 @@ type SimulationResponse struct {
 }
 
 func SimulationHander(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+	allowedOrigins := []string{"http://localhost:5173",
+		"http://localhost:4173",
+		"https://texas-holdem-hand-calculator-api.onrender.com"}
+
+	origin := r.Header.Get("Origin")
+	for _, allowedOrigin := range allowedOrigins {
+		if origin == allowedOrigin {
+			w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
+			break
+		}
+	}
+
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
