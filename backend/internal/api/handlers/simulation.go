@@ -27,7 +27,7 @@ type SimulationResponse struct {
 func SimulationHander(w http.ResponseWriter, r *http.Request) {
 	allowedOrigins := []string{"http://localhost:5173",
 		"http://localhost:4173",
-		"https://texas-holdem-hand-calculator-api.onrender.com"}
+		"https://texas-holdem-calculator.onrender.com"}
 
 	origin := r.Header.Get("Origin")
 	for _, allowedOrigin := range allowedOrigins {
