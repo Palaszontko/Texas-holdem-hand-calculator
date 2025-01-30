@@ -67,9 +67,9 @@ func SimulationHander(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if req.NumIterations <= 0 {
-		req.NumIterations = 100_000
-	} else if req.NumIterations > 500_000 {
-		req.NumIterations = 500_000
+		req.NumIterations = 10_000
+	} else if req.NumIterations > 10_000 {
+		req.NumIterations = 10_000
 	}
 
 	if req.NumConcurrent <= 0 {
