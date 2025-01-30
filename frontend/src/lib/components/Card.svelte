@@ -23,12 +23,12 @@
     };
 </script>
 
-<div class="group relative m-1">
+<div class="group relative shrink-0">
     <button
         type="button"
         on:click={handleSelect}
         on:keydown={handleKeyDown}
-        class="w-24 h-32 relative transform transition-all duration-300 
+        class="w-16 h-24 sm:w-20 sm:h-28 md:w-24 md:h-32 relative transform transition-all duration-300 
                {!isUsed ? 'hover:scale-110 hover:-translate-y-1 cursor-pointer' : 'opacity-30 cursor-not-allowed'}
                {$gameState.selectedCard?.id === id ? 'scale-110 -translate-y-1' : ''}"
         aria-label="Select card {alt}"

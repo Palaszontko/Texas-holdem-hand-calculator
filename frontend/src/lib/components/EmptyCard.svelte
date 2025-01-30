@@ -33,19 +33,19 @@
              blur opacity-0 group-hover:opacity-30 transition duration-300
              {isSelected ? 'opacity-30' : ''}">
         </div>
-        <div class="relative w-32 h-48 bg-white/5 rounded-lg border-2 border-white/10 
+        <div class="relative w-24 h-36 md:w-32 md:h-48 bg-white/5 rounded-lg border-2 border-white/10 
              transition-all duration-300 group-hover:border-purple-500/30 
              {isSelected ? 'border-pink-300 animate-pulse' : ''}">
             <div class="w-full h-full flex items-center justify-center">
-                <div class="text-white/20 text-4xl group-hover:text-white/40 transition-all duration-300">+</div>        
+                <div class="text-white/20 text-3xl md:text-4xl group-hover:text-white/40 transition-all duration-300">+</div>        
             </div>
         </div>
     {:else}
-        <div class="relative w-32 h-48 transform transition-all duration-300 group-hover:scale-105">
+        <div class="relative w-24 h-36 md:w-32 md:h-48 transform transition-all duration-300 group-hover:scale-105">
             <img 
                 src={currentCard.src} 
                 alt={currentCard.alt} 
-                class="w-full h-full object-scale-down rounded-lg"
+                class="w-full h-full object-contain rounded-lg"
             />
             <div class="absolute inset-0 flex items-center justify-center rounded-lg transition-all duration-300">
                 <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-40 rounded-lg transition-all duration-300"></div>

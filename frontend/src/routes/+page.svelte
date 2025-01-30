@@ -22,24 +22,32 @@
     const allCards = [diamondCards, clubCards, heartCards, spadeCards];
 </script>
 
-<div class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col items-center p-2">
-    <div class="w-full max-w-7xl mx-auto text-center mb-4">
-       <h1 class="text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text mb-2">Texas Holdem Odds Calculator</h1>
+<div class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col items-center p-2 overflow-x-hidden">
+    <div class="w-full max-w-7xl mx-auto text-center mb-4 px-4">
+       <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text mb-2">
+         Texas Holdem Odds Calculator
+       </h1>
        <div class="h-1 w-32 bg-purple-500 mx-auto rounded-full"></div>
     </div>
 
-    <div class="table-cards w-full max-w-fit mx-auto flex flex-row flex-wrap gap-2">
-        <Table/>
-        <ChancesBox/>
+    <div class="w-full flex flex-col lg:flex-row justify-center items-start gap-4 px-2 mb-4">
+        <div class="w-full lg:w-auto">
+            <Table/>
+        </div>
+        <div class="w-full lg:w-64">
+            <ChancesBox/>
+        </div>
     </div>
     
-    <div class="space-y-2 p-2">
-        {#each allCards as cardSetColor}
+    <div class="w-full max-w-[95vw] mx-auto space-y-2 p-2 overflow-x-auto">
+    {#each allCards as cardSetColor}
+        <div class="flex justify-center min-w-min">
             <AllCardBox>
                 {#each cardSetColor as card}
                     <Card src={card.src} alt={card.alt} id={card.id}/>
                 {/each}
             </AllCardBox>
-        {/each}
-    </div>
+        </div>
+    {/each}
+</div>
 </div>
