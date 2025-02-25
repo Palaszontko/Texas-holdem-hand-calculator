@@ -168,7 +168,7 @@ Health check endpoint.
 - [✓] Svelte frontend setup
 - [✓] Interactive card picker component
 - [✓] Real-time simulation results display
-- [ ] Mobile responsiveness
+- [✓] Mobile responsiveness
 
 ### Future Ideas
 - [ ] Add multiple opponents simulation
